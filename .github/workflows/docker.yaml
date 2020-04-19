@@ -1,0 +1,21 @@
+name: Docker Image CI
+
+on:
+  push:
+    tags:
+    - v*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build and push the Docker image
+      run: |
+        docker login --username hellodhlyn --password ${{ secrets.DOCKER_ACCESS_TOKEN }}
+
+        docker build -t hellodhlyn/hcp:latest .
+        docker push hellodhlyn/hcp:latest
+
+        docker tag hellodhlyn/hcp:latest hellodhlyn/hcp:${GITHUB_REF##*/}
+        docker push hellodhlyn/hcp:${GITHUB_REF##*/}
